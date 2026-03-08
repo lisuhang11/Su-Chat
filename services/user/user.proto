@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "./gen"; // 根据实际项目路径调整
+
+// 用户注册请求
+message UserRegisterReq {
+  string nickname = 1;       // 必填，昵称
+  string password = 2;       // 必填，密码
+  optional string phone = 3;        // 选填，手机号（唯一）
+  optional string email = 4;        // 选填，邮箱（唯一）
+  optional string user_portrait = 5; // 选填，头像 URL
+  map<string, string> ext_fields = 6; // 选填，扩展字段（存入 userexts 表）
+}
+
+// 用户注册响应
+message UserRegisterResp {
+  string user_id = 1; // 用户ID
+}
+
+// 用户登录请求
+message UserLoginReq {
+  string user_id = 1;  // 必填，登录标识（支持账号/手机号/邮箱）
+  string password = 2; // 必填，密码
+}
+
+// 用户登录响应
+message UserLoginResp {
+  string user_id = 1; // 用户内部 ID
+}
+
+// 查询用户信息请求
+message UserInfoReq {
+  string user_id = 1; // 必填，用户内部 ID
+}
+
+// 查询用户信息响应
+message UserInfoResp {
+  string user_id = 1;        // 用户内部 ID
+  string account = 2;        // 登录账号
+  string nickname = 3;       // 用户昵称
+  optional string phone = 4;         // 手机号
+  optional string email = 5;         // 邮箱
+  optional string user_portrait = 6; // 头像 URL
+  map<string, string> ext_fields = 7; // 扩展字段
+}
+
+// 更新用户信息请求
+message UserInfoUpdateReq {
+  string user_id = 1;        // 必填，用户内部 ID
+  optional string nickname = 2;      // 选填，新昵称
+  optional string phone = 3;         // 选填，新手机号
+  optional string email = 4;         // 选填，新邮箱
+  optional string user_portrait = 5; // 选填，新头像
+  map<string, string> ext_fields = 6; // 选填，更新扩展字段（全量替换）
+}
+
+// 更新用户信息响应
+message UserInfoUpdateResp {
+  string user_id = 1;
+  string account = 2;
+  string nickname = 3;
+  optional string phone = 4;
+  optional string email = 5;
+  optional string user_portrait = 6;
+  map<string, string> ext_fields = 7;
+}
+
+// 用户在线状态查询请求
+message UsersOnlineStatusReq {
+  repeated string user_ids = 1; // 需要查询的用户内部 ID 列表
+}
+
+// 单个用户在线状态
+message UserOnlineStatus {
+  string user_id = 1;   // 用户内部 ID
+  bool is_online = 2;   // 是否在线
+}
+
+// 用户在线状态响应
+message UsersOnlineStatusResp {
+  repeated UserOnlineStatus items = 1;
+}
+
+// 用户服务定义
+service UserService {
+  // 用户注册
+  rpc Register(UserRegisterReq) returns (UserRegisterResp);
+  // 用户登录
+  rpc Login(UserLoginReq) returns (UserLoginResp);
+  // 查询用户信息
+  rpc GetUserInfo(UserInfoReq) returns (UserInfoResp);
+  // 更新用户信息
+  rpc UpdateUserInfo(UserInfoUpdateReq) returns (UserInfoUpdateResp);
+  // 批量查询用户在线状态
+  rpc GetUsersOnlineStatus(UsersOnlineStatusReq) returns (UsersOnlineStatusResp);
+}
+
+
+
+// // protoc --go_out=. --go-grpc_out=. user.proto

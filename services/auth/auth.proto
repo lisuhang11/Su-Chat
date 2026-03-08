@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+option go_package = "./gen";
+
+
+service AuthService {
+  // 为指定用户生成新的访问令牌和刷新令牌
+  rpc IssueToken(IssueTokenRequest) returns (IssueTokenResponse);
+
+  // RefreshToken 用有效的刷新令牌换取新的访问令牌
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+}
+
+// IssueTokenRequest 包含请求令牌对的用户标识。
+message IssueTokenRequest {
+  string user_id = 1; // UserId
+}
+
+// IssueTokenResponse 返回颁发的访问令牌和刷新令牌，以及相关元数据。
+message IssueTokenResponse {
+  string access_token = 1;   // 用于在授权头中使用的访问令牌。
+  string refresh_token = 2;  // 用于获取新访问令牌的刷新令牌。
+  int64 expires_in = 3;      // 访问令牌的有效期（秒）。
+}
+
+// RefreshTokenRequest 携带用于获取新访问令牌的刷新令牌。
+message RefreshTokenRequest {
+  string refresh_token = 1; // 一个有效的刷新令牌。
+}
+
+// RefreshTokenResponse 提供新的访问令牌以及可选的新刷新令牌。
+message RefreshTokenResponse {
+  string access_token = 1;                // 新颁发的访问令牌。
+  string refresh_token = 2;               // 新访问令牌的刷新令牌。
+  int64 expires_in = 3;                   // 访问令牌的有效期（秒）。
+}
+
+
+// protoc --go_out=. --go-grpc_out=. auth.proto

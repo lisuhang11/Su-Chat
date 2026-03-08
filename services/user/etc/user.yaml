@@ -1,0 +1,22 @@
+Name: user.rpc
+ListenOn: 0.0.0.0:10001
+Mode: dev
+
+Etcd:
+  Host: locolhost:8500
+  Key:
+    user.rpc
+  Meta:
+    Protocol: grpc
+
+MysqlConfig:
+  Host: localhost:3306
+  Acount: root
+  Password: root
+  Database: Su-Chat
+  Conntimeout: 5
+
+RedisConfig:
+  Host: localhost:6379
+  Password: root
+
